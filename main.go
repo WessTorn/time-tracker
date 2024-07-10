@@ -1,12 +1,15 @@
 package main
 
 import (
+	"time-tracker/config"
 	"time-tracker/database"
 	"time-tracker/logger"
 	"time-tracker/routers"
 )
 
 func main() {
+	config.InitConfig()
+
 	logger.InitLogger()
 
 	db := database.ConnectDB()
@@ -16,5 +19,5 @@ func main() {
 
 	router := routers.InitRouter(db)
 
-	router.Run("localhost:8080")
+	router.Run(config.HostURL())
 }

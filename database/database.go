@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time-tracker/config"
 	"time-tracker/logger"
 
 	_ "github.com/lib/pq"
@@ -12,7 +13,9 @@ import (
 func ConnectDB() *sql.DB {
 	logger.Log.Debug("(ConnectDB)")
 
-	psqlInfo := "host=localhost port=5432 user=postgres password=root dbname=tz_iul sslmode=disable"
+	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		config.DBAddress(), config.DBPort(), config.DBUser(), config.DBPass(), config.DBDatabase())
+
 	logger.Log.Debugf("(psqlInfo) %s", psqlInfo)
 
 	db, err := sql.Open("postgres", psqlInfo)

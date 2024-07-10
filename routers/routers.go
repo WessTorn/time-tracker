@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time-tracker/config"
 	"time-tracker/database"
 	"time-tracker/logger"
 
@@ -16,19 +17,19 @@ func InitRouter(db *sql.DB) *gin.Engine {
 
 	router := gin.Default()
 
-	router.GET("/users", func(c *gin.Context) {
+	router.GET(config.HostRelativePath(), func(c *gin.Context) {
 		getUsers(c, db) // 1) Получение данных пользователей
 	})
 
-	router.DELETE("/users"+"/:id", func(c *gin.Context) {
+	router.DELETE(config.HostRelativePath()+"/:id", func(c *gin.Context) {
 		deleteUser(c, db) // 5) Удаление пользователя
 	})
 
-	router.PUT("/users"+"/:id", func(c *gin.Context) {
+	router.PUT(config.HostRelativePath()+"/:id", func(c *gin.Context) {
 		updateUser(c, db) // 6) Изменение данных пользователя
 	})
 
-	router.POST("/users", func(c *gin.Context) {
+	router.POST(config.HostRelativePath(), func(c *gin.Context) {
 		addUser(c, db) // 7) Добавление нового пользователя
 	})
 
@@ -36,7 +37,7 @@ func InitRouter(db *sql.DB) *gin.Engine {
 }
 
 func GetUserDataFromExternalAPI(serie string, number string) (*database.User, error) {
-	url := "http://localhost:8081/info" + "?passportSerie=" + serie + "&passportNumber=" + number
+	url := config.ExternalApiURL() + "?passportSerie=" + serie + "&passportNumber=" + number
 	resp, err := http.Get(url)
 
 	if err != nil {
