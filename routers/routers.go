@@ -14,11 +14,15 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/users", func(c *gin.Context) {
-		getUsers(c, db)
+		getUsers(c, db) // 1) Получение данных пользователей
+	})
+
+	router.DELETE("/users"+"/:id", func(c *gin.Context) {
+		deleteUser(c, db) // 5) Удаление пользователя
 	})
 
 	router.POST("/users", func(c *gin.Context) {
-		addUser(c, db)
+		addUser(c, db) // 7) Добавление нового пользователя
 	})
 
 	return router

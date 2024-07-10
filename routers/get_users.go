@@ -52,6 +52,7 @@ func getUsers(c *gin.Context, db *sql.DB) {
 	}
 	defer query.Close()
 
+	var isFound bool
 	for query.Next() {
 		var user database.User
 		err := query.Scan(&user.ID, &user.LastName, &user.FirstName, &user.Patronymic, &user.Address, &user.PassportSerie, &user.PassportNumber)
@@ -60,6 +61,12 @@ func getUsers(c *gin.Context, db *sql.DB) {
 			return
 		}
 		users = append(users, user)
+		isFound = true
+	}
+
+	if !isFound {
+		c.JSON(http.StatusNotFound, gin.H{"message": "No users found"})
+		return
 	}
 
 	c.JSON(http.StatusOK, users)
