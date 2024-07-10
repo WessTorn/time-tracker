@@ -52,7 +52,21 @@ func CreateSchema(db *sql.DB) {
 		logger.Log.Fatalf("(Exec): %v", err)
 	}
 
-	logger.Log.Info("Table created successfully")
+	query = `
+		CREATE TABLE IF NOT EXISTS tasks (
+			id SERIAL PRIMARY KEY,
+			task_id INTEGER NOT NULL,
+			user_id INTEGER REFERENCES users(id) NOT NULL,
+            start_time TIMESTAMP NOT NULL,
+            end_time TIMESTAMP
+		);
+	`
+	_, err = db.Exec(query)
+	if err != nil {
+		logger.Log.Fatalf("(Exec): %v", err)
+	}
+
+	logger.Log.Info("Tables created successfully")
 }
 
 func SelectUsers(db *sql.DB, filter User, limit int, page int) ([]User, error) {
@@ -175,5 +189,56 @@ func InsertUser(db *sql.DB, newUser User) error {
 	}
 
 	fmt.Println("User added successfully")
+	return nil
+}
+
+func IsTaskStarted(db *sql.DB, task Task) bool {
+	logger.Log.Debug("(IsTaskStarted)")
+
+	var exists bool
+	query := `
+        SELECT EXISTS (
+            SELECT 1 FROM tasks
+            WHERE task_id = $1 AND user_id = $2 AND end_time IS NULL
+        );
+    `
+	err := db.QueryRow(query, task.TaskID, task.UserID).Scan(&exists)
+	if err != nil {
+		return false
+	}
+
+	return exists
+}
+
+func InsertTask(db *sql.DB, newTask Task) error {
+	logger.Log.Debug("(InsertTask)")
+
+	query := `
+        INSERT INTO tasks (task_id, user_id, start_time)
+        VALUES ($1, $2, $3);
+    `
+	_, err := db.Exec(query, newTask.TaskID, newTask.UserID, newTask.StartTime)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Task added successfully")
+	return nil
+}
+
+func UpdateTask(db *sql.DB, newTask Task) error {
+	logger.Log.Debug("(UpdateTask)")
+
+	query := `
+        UPDATE tasks
+		SET end_time = $1
+        WHERE user_id = $2 AND task_id = $3 AND end_time IS NULL;
+    `
+	_, err := db.Exec(query, newTask.EndTime, newTask.UserID, newTask.TaskID)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Task end successfully")
 	return nil
 }

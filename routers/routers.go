@@ -21,6 +21,18 @@ func InitRouter(db *sql.DB) *gin.Engine {
 		getUsers(c, db) // 1) Получение данных пользователей
 	})
 
+	// router.GET(config.HostRelativePath(), func(c *gin.Context) {
+	// 	getUsers(c, db) // 2) Получение трудозатрат по пользователю за период задача-сумма часов и минут с сортировкой от большей затраты к меньшей
+	// })
+
+	router.POST(config.HostRelativePath()+"/task/start/:id", func(c *gin.Context) {
+		startTask(c, db) // 3) Начать отсчет времени по задаче для пользователя
+	})
+
+	router.POST(config.HostRelativePath()+"/task/stop/:id", func(c *gin.Context) {
+		stopTask(c, db) // 4) Закончить отсчет времени по задаче для пользователя
+	})
+
 	router.DELETE(config.HostRelativePath()+"/:id", func(c *gin.Context) {
 		deleteUser(c, db) // 5) Удаление пользователя
 	})

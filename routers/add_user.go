@@ -60,7 +60,6 @@ func addUser(c *gin.Context, db *sql.DB) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "User added successfully"})
-
 }
 
 func checkPassportNumber(passportNumber string) (serie string, number string, check bool) {
