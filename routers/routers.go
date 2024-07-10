@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"tz_iul/database"
+	"time-tracker/database"
+	"time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func InitRouter(db *sql.DB) *gin.Engine {
+	logger.Log.Debug("InitRouter")
+
 	router := gin.Default()
 
 	router.GET("/users", func(c *gin.Context) {

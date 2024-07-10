@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"tz_iul/database"
-	"tz_iul/routers"
+	"time-tracker/database"
+	"time-tracker/logger"
+	"time-tracker/routers"
 )
 
 func main() {
+	logger.InitLogger()
+
 	db := database.ConnectDB()
-	if db == nil {
-		fmt.Println("Failed to connect to database")
-	}
 	defer db.Close()
 
 	database.CreateSchema(db)

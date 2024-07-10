@@ -5,12 +5,15 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"tz_iul/database"
+	"time-tracker/database"
+	"time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func addUser(c *gin.Context, db *sql.DB) {
+	logger.Log.Debug("(addUser)")
+
 	var request struct {
 		PassportNumber string `json:"passportNumber"`
 	}
@@ -36,7 +39,7 @@ func addUser(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	addUser := database.User{
+	newUser := database.User{
 		LastName:       getUser.LastName,
 		FirstName:      getUser.FirstName,
 		Patronymic:     getUser.Patronymic,
@@ -45,12 +48,12 @@ func addUser(c *gin.Context, db *sql.DB) {
 		PassportNumber: number,
 	}
 
-	if database.IsUserExists(db, addUser) {
+	if database.IsUserExists(db, newUser) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User already exists"})
 		return
 	}
 
-	err = database.AddNewUser(db, addUser)
+	err = database.InsertUser(db, newUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user to the database"})
 		return

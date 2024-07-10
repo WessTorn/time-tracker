@@ -5,14 +5,17 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"tz_iul/database"
+	"time-tracker/database"
+	"time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func updateUser(c *gin.Context, db *sql.DB) {
-	var user database.User
+	logger.Log.Debug("(updateUser)")
 	id := c.Param("id")
+
+	var user database.User
 
 	err := c.BindJSON(&user)
 	if err != nil {
@@ -20,8 +23,6 @@ func updateUser(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	// Формируем SQL запрос с учетом того, какие поля были изменены
-	var sqlStatement string
 	fieldsToUpdate := make([]string, 0, 6)
 	paramsToUpdate := make([]interface{}, 0, 6)
 
@@ -74,21 +75,17 @@ func updateUser(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	sqlStatement = fmt.Sprintf("UPDATE users SET %s WHERE id=%s;", strings.Join(fieldsToUpdate, ", "), id)
-	result, err := db.Exec(sqlStatement, paramsToUpdate...)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	setMessage := strings.Join(fieldsToUpdate, ", ")
 
-	rowsAffected, err := result.RowsAffected()
+	err = database.UpdateUser(db, id, setMessage, paramsToUpdate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get rows affected"})
-		return
-	}
-
-	if rowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"message": "User not found"})
+		switch err.Error() {
+		case "UserNotFound":
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+			return
+		}
 		return
 	}
 
