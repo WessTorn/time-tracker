@@ -21,6 +21,10 @@ func InitRouter(db *sql.DB) *gin.Engine {
 		deleteUser(c, db) // 5) Удаление пользователя
 	})
 
+	router.PUT("/users"+"/:id", func(c *gin.Context) {
+		updateUser(c, db) // 6) Изменение данных пользователя
+	})
+
 	router.POST("/users", func(c *gin.Context) {
 		addUser(c, db) // 7) Добавление нового пользователя
 	})
