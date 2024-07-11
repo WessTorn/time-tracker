@@ -11,23 +11,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Add a new user
+// @Tags users
+// @Description Add a new user to the database using passport series and number
+// @Accept json
+// @Produce json
+// @Param passportNumber body Passport true "Passport number"
+// @Success 200 {object} Response "User added successfully"
+// @Failure 400 {object} Response "Invalid request payload, Invalid passport number"
+// @Failure 409 {object} Response "User already exists"
+// @Failure 500 {object} Response "Failed to fetch user data from external API, Failed to add user to the database"
+// @Router /users [post]
 func addUser(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(addUser)")
 
-	var request struct {
-		PassportNumber string `json:"passportNumber"`
-	}
-
+	var request Passport
 	err := c.BindJSON(&request)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid request payload"})
 		return
 	}
 
 	serie, number, check := checkPassportNumber(request.PassportNumber)
 
 	if !check {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid passport number"})
+		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid passport number"})
 		return
 	}
 
@@ -35,7 +43,7 @@ func addUser(c *gin.Context, db *sql.DB) {
 	getUser, err = GetUserDataFromExternalAPI(serie, number)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user data from external API"})
+		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to fetch user data from external API"})
 		return
 	}
 
@@ -49,17 +57,17 @@ func addUser(c *gin.Context, db *sql.DB) {
 	}
 
 	if database.IsUserExists(db, newUser) {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User already exists"})
+		c.JSON(http.StatusConflict, Response{409, "error", "User already exists"})
 		return
 	}
 
 	err = database.InsertUser(db, newUser)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add user to the database"})
+		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to add user to the database"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User added successfully"})
+	c.JSON(http.StatusOK, Response{200, "message", "User added successfully"})
 }
 
 func checkPassportNumber(passportNumber string) (serie string, number string, check bool) {

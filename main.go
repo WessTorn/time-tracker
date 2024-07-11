@@ -7,6 +7,12 @@ import (
 	"time-tracker/routers"
 )
 
+//	@title			Time tracker
+//	@version		1.0.0
+//	@description	This is an example of a time tracking API..
+
+// @host		localhost:8080
+// @BasePath	/
 func main() {
 	config.InitConfig()
 

@@ -11,6 +11,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Update User
+// @Tags users
+// @Description Updates a user by ID
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param user body database.User true "User data to update"
+// @Success 200 {object} Response "User updated successfully"
+// @Failure 400 {object} Response "No fields to update, Error print"
+// @Failure 404 {object} Response "User not found"
+// @Failure 500 {object} Response "Failed to update user"
+// @Router /users [put]
 func updateUser(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(updateUser)")
 	id := c.Param("id")
@@ -19,7 +31,7 @@ func updateUser(c *gin.Context, db *sql.DB) {
 
 	err := c.BindJSON(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, Response{400, "error", err.Error()})
 		return
 	}
 
@@ -71,7 +83,7 @@ func updateUser(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(fieldsToUpdate) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No fields to update"})
+		c.JSON(http.StatusBadRequest, Response{400, "error", "No fields to update"})
 		return
 	}
 
@@ -81,13 +93,13 @@ func updateUser(c *gin.Context, db *sql.DB) {
 	if err != nil {
 		switch err.Error() {
 		case "UserNotFound":
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			c.JSON(http.StatusNotFound, Response{404, "error", "User not found"})
 		default:
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+			c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to update user"})
 			return
 		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+	c.JSON(http.StatusOK, Response{200, "message", "User updated successfully"})
 }
