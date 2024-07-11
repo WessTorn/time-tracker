@@ -58,7 +58,8 @@ func CreateSchema(db *sql.DB) {
 			task_id INTEGER NOT NULL,
 			user_id INTEGER REFERENCES users(id) NOT NULL,
             start_time TIMESTAMP NOT NULL,
-            end_time TIMESTAMP
+            end_time TIMESTAMP,
+			duration INTERVAL DEFAULT NULL
 		);
 	`
 	_, err = db.Exec(query)
@@ -192,6 +193,41 @@ func InsertUser(db *sql.DB, newUser User) error {
 	return nil
 }
 
+func SelectTasts(db *sql.DB, id int) ([]Task, error) {
+	var Tasks []Task
+	query, err := db.Query(`
+		SELECT task_id, start_time, end_time, duration
+		FROM tasks
+		WHERE 
+			user_id = $1 AND end_time IS NOT NULL
+		ORDER BY 
+			(end_time - start_time)  DESC;
+	`, id)
+
+	if err != nil {
+		return Tasks, errors.New("FailedtoGetTasks")
+	}
+	defer query.Close()
+
+	var isFound bool
+	for query.Next() {
+		var task Task
+		err := query.Scan(&task.TaskID, &task.StartTime, &task.EndTime, &task.Duration)
+		if err != nil {
+
+			return Tasks, errors.New("FailedtoGetTasks")
+		}
+		Tasks = append(Tasks, task)
+		isFound = true
+	}
+
+	if !isFound {
+		return Tasks, errors.New("TasksNotFound")
+	}
+
+	return Tasks, nil
+}
+
 func IsTaskStarted(db *sql.DB, task Task) bool {
 	logger.Log.Debug("(IsTaskStarted)")
 
@@ -231,7 +267,7 @@ func UpdateTask(db *sql.DB, newTask Task) error {
 
 	query := `
         UPDATE tasks
-		SET end_time = $1
+		SET end_time = $1, duration = DATE_TRUNC('second', $1 - start_time)
         WHERE user_id = $2 AND task_id = $3 AND end_time IS NULL;
     `
 	_, err := db.Exec(query, newTask.EndTime, newTask.UserID, newTask.TaskID)

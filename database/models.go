@@ -1,6 +1,8 @@
 package database
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	ID             int    `json:"id"`
@@ -13,9 +15,10 @@ type User struct {
 }
 
 type Task struct {
-	ID        int       `json:"id"`
+	ID        int       `json:"-"`
 	TaskID    int       `json:"task_id"`
-	UserID    int       `json:"user_id"`
+	UserID    int       `json:"-"`
 	StartTime time.Time `json:"start_time"`
 	EndTime   time.Time `json:"end_time"`
+	Duration  string    `json:"duration"`
 }
