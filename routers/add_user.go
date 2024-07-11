@@ -63,6 +63,7 @@ func addUser(c *gin.Context, db *sql.DB) {
 }
 
 func checkPassportNumber(passportNumber string) (serie string, number string, check bool) {
+	logger.Log.Debug("(checkPassportNumber)")
 	parts := strings.Split(passportNumber, " ")
 	if len(parts) != 2 {
 		return "", "", false

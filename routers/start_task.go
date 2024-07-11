@@ -6,11 +6,13 @@ import (
 	"strconv"
 	"time"
 	"time-tracker/database"
+	"time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
 func startTask(c *gin.Context, db *sql.DB) {
+	logger.Log.Debug("(startTask)")
 	getId := c.Param("id")
 
 	var request struct {

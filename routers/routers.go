@@ -13,7 +13,7 @@ import (
 )
 
 func InitRouter(db *sql.DB) *gin.Engine {
-	logger.Log.Debug("InitRouter")
+	logger.Log.Debug("(InitRouter)")
 
 	router := gin.Default()
 
@@ -22,7 +22,7 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	})
 
 	router.GET(config.HostRelativePath()+"/task/:id", func(c *gin.Context) {
-		getTasts(c, db) // 2) Получение трудозатрат по пользователю за период задача-сумма часов и минут с сортировкой от большей затраты к меньшей
+		getTasks(c, db) // 2) Получение трудозатрат по пользователю за период задача-сумма часов и минут с сортировкой от большей затраты к меньшей
 	})
 
 	router.POST(config.HostRelativePath()+"/task/start/:id", func(c *gin.Context) {
@@ -49,16 +49,23 @@ func InitRouter(db *sql.DB) *gin.Engine {
 }
 
 func GetUserDataFromExternalAPI(serie string, number string) (*database.User, error) {
+	logger.Log.Debug("(GetUserDataFromExternalAPI)")
+
 	url := config.ExternalApiURL() + "?passportSerie=" + serie + "&passportNumber=" + number
+
+	logger.Log.Debugf("(url) %s", url)
+
 	resp, err := http.Get(url)
 
 	if err != nil {
+		logger.Log.Debugf("(Get) %v", err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		logger.Log.Debugf("(Status) %d", resp.StatusCode)
 		return nil, err
 	}
 
@@ -68,6 +75,7 @@ func GetUserDataFromExternalAPI(serie string, number string) (*database.User, er
 	fmt.Println(userData.FirstName, userData.LastName, userData.Patronymic, userData.Address)
 
 	if err != nil {
+		logger.Log.Debugf("(Decode) %v", err)
 		return nil, err
 	}
 

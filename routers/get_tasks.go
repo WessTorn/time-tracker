@@ -5,11 +5,14 @@ import (
 	"net/http"
 	"strconv"
 	"time-tracker/database"
+	"time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
 
-func getTasts(c *gin.Context, db *sql.DB) {
+func getTasks(c *gin.Context, db *sql.DB) {
+	logger.Log.Debug("(getTasks)")
+
 	getId := c.Param("id")
 
 	id, err := strconv.Atoi(getId)
@@ -18,7 +21,7 @@ func getTasts(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	tasks, err := database.SelectTasts(db, id)
+	tasks, err := database.SelectTasks(db, id)
 	if err != nil {
 		switch err.Error() {
 		case "TasksNotFound":

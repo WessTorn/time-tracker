@@ -95,6 +95,7 @@ func SelectUsers(db *sql.DB, filter User, limit int, page int) ([]User, error) {
 		(page-1)*limit)
 
 	if err != nil {
+		logger.Log.Debugf("(Query) %v", err)
 		return Users, errors.New("FailedtoGetUsers")
 	}
 	defer query.Close()
@@ -104,6 +105,7 @@ func SelectUsers(db *sql.DB, filter User, limit int, page int) ([]User, error) {
 		var user User
 		err := query.Scan(&user.ID, &user.LastName, &user.FirstName, &user.Patronymic, &user.Address, &user.PassportSerie, &user.PassportNumber)
 		if err != nil {
+			logger.Log.Debugf("(Scan) %v", err)
 			return Users, errors.New("FailedtoGetUsers")
 		}
 		Users = append(Users, user)
@@ -122,11 +124,13 @@ func DeletUserFromID(db *sql.DB, id string) error {
 
 	res, err := db.Exec("DELETE FROM users WHERE id = $1", id)
 	if err != nil {
+		logger.Log.Debugf("(Exec) %v", err)
 		return errors.New("FailedToDeleteUser")
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
+		logger.Log.Debugf("(RowsAffected) %v", err)
 		return errors.New("FailedToDeleteUser")
 	}
 
@@ -143,11 +147,13 @@ func UpdateUser(db *sql.DB, id string, set string, paramsToUpdate []interface{})
 	sqlStatement := fmt.Sprintf("UPDATE users SET %s WHERE id=%s;", set, id)
 	result, err := db.Exec(sqlStatement, paramsToUpdate...)
 	if err != nil {
+		logger.Log.Debugf("(Exec) %v", err)
 		return errors.New("FailedToUpdateUser")
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
+		logger.Log.Debugf("(RowsAffected) %v", err)
 		return errors.New("FailedToUpdateUser")
 	}
 
@@ -170,6 +176,7 @@ func IsUserExists(db *sql.DB, user User) bool {
     `
 	err := db.QueryRow(query, user.PassportSerie, user.PassportNumber).Scan(&exists)
 	if err != nil {
+		logger.Log.Debugf("(QueryRow) %v", err)
 		return false
 	}
 
@@ -186,6 +193,7 @@ func InsertUser(db *sql.DB, newUser User) error {
 
 	_, err := db.Exec(query, newUser.LastName, newUser.FirstName, newUser.Patronymic, newUser.Address, newUser.PassportSerie, newUser.PassportNumber)
 	if err != nil {
+		logger.Log.Debugf("(Exec) %v", err)
 		return err
 	}
 
@@ -193,7 +201,8 @@ func InsertUser(db *sql.DB, newUser User) error {
 	return nil
 }
 
-func SelectTasts(db *sql.DB, id int) ([]Task, error) {
+func SelectTasks(db *sql.DB, id int) ([]Task, error) {
+	logger.Log.Debug("(SelectTasks)")
 	var Tasks []Task
 	query, err := db.Query(`
 		SELECT task_id, start_time, end_time, duration
@@ -205,6 +214,7 @@ func SelectTasts(db *sql.DB, id int) ([]Task, error) {
 	`, id)
 
 	if err != nil {
+		logger.Log.Debugf("(Query) %v", err)
 		return Tasks, errors.New("FailedtoGetTasks")
 	}
 	defer query.Close()
@@ -214,7 +224,7 @@ func SelectTasts(db *sql.DB, id int) ([]Task, error) {
 		var task Task
 		err := query.Scan(&task.TaskID, &task.StartTime, &task.EndTime, &task.Duration)
 		if err != nil {
-
+			logger.Log.Debugf("(Scan) %v", err)
 			return Tasks, errors.New("FailedtoGetTasks")
 		}
 		Tasks = append(Tasks, task)
@@ -240,6 +250,7 @@ func IsTaskStarted(db *sql.DB, task Task) bool {
     `
 	err := db.QueryRow(query, task.TaskID, task.UserID).Scan(&exists)
 	if err != nil {
+		logger.Log.Debugf("(QueryRow) %v", err)
 		return false
 	}
 
@@ -255,6 +266,7 @@ func InsertTask(db *sql.DB, newTask Task) error {
     `
 	_, err := db.Exec(query, newTask.TaskID, newTask.UserID, newTask.StartTime)
 	if err != nil {
+		logger.Log.Debugf("(Exec) %v", err)
 		return err
 	}
 
@@ -272,6 +284,7 @@ func UpdateTask(db *sql.DB, newTask Task) error {
     `
 	_, err := db.Exec(query, newTask.EndTime, newTask.UserID, newTask.TaskID)
 	if err != nil {
+		logger.Log.Debugf("(Exec) %v", err)
 		return err
 	}
 

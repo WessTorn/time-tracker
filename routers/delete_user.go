@@ -10,7 +10,7 @@ import (
 )
 
 func deleteUser(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("deleteUser")
+	logger.Log.Debug("(deleteUser)")
 	id := c.Param("id")
 
 	err := database.DeletUserFromID(db, id)

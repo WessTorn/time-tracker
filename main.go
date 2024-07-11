@@ -19,5 +19,7 @@ func main() {
 
 	router := routers.InitRouter(db)
 
+	logger.Log.Infof("(Run) %s", config.HostURL())
+
 	router.Run(config.HostURL())
 }
