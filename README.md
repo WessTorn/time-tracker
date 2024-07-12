@@ -1,5 +1,9 @@
 # time-tracker
 
+## swagger
+
+https://wesstorn.github.io/time-tracker/
+
 ## Библиотеки
 
 go get -u github.com/gin-gonic/gin
