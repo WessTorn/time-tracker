@@ -21,31 +21,31 @@ func InitRouter(db *sql.DB) *gin.Engine {
 
 	router := gin.Default()
 
-	router.GET(config.HostRelativePath(), func(c *gin.Context) {
+	router.GET("/users", func(c *gin.Context) {
 		getUsers(c, db) // 1) Получение данных пользователей
 	})
 
-	router.GET("/task/:id", func(c *gin.Context) {
+	router.GET("/tasks/:id", func(c *gin.Context) {
 		getTasks(c, db) // 2) Получение трудозатрат по пользователю за период задача-сумма часов и минут с сортировкой от большей затраты к меньшей
 	})
 
-	router.POST("/task/start/:id", func(c *gin.Context) {
+	router.POST("/tasks/start/:id", func(c *gin.Context) {
 		startTask(c, db) // 3) Начать отсчет времени по задаче для пользователя
 	})
 
-	router.POST("/task/stop/:id", func(c *gin.Context) {
+	router.POST("/tasks/stop/:id", func(c *gin.Context) {
 		stopTask(c, db) // 4) Закончить отсчет времени по задаче для пользователя
 	})
 
-	router.DELETE(config.HostRelativePath()+"/:id", func(c *gin.Context) {
+	router.DELETE("/users/:id", func(c *gin.Context) {
 		deleteUser(c, db) // 5) Удаление пользователя
 	})
 
-	router.PUT(config.HostRelativePath()+"/:id", func(c *gin.Context) {
+	router.PUT("/users/:id", func(c *gin.Context) {
 		updateUser(c, db) // 6) Изменение данных пользователя
 	})
 
-	router.POST(config.HostRelativePath(), func(c *gin.Context) {
+	router.POST("/users", func(c *gin.Context) {
 		addUser(c, db) // 7) Добавление нового пользователя
 	})
 

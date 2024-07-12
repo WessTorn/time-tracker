@@ -14,7 +14,6 @@ import (
 // @Summary Update User
 // @Tags users
 // @Description Updates a user by ID
-// @Accept json
 // @Produce json
 // @Param id path string true "User ID"
 // @Param user body database.User true "User data to update"
@@ -22,7 +21,7 @@ import (
 // @Failure 400 {object} Response "No fields to update, Error print"
 // @Failure 404 {object} Response "User not found"
 // @Failure 500 {object} Response "Failed to update user"
-// @Router /users [put]
+// @Router /users/{id} [put]
 func updateUser(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(updateUser)")
 	id := c.Param("id")

@@ -53,7 +53,7 @@ info:
   title: Time tracker
   version: 1.0.0
 paths:
-  /tasks:
+  /tasks/{id}:
     get:
       description: Retrieves a list of tasks for a user
       parameters:
@@ -86,7 +86,7 @@ paths:
       summary: Get Tasks
       tags:
       - tasks
-  /tasks/{id}/start:
+  /tasks/start/{id}:
     post:
       description: Starts a task for a user
       parameters:
@@ -112,6 +112,10 @@ paths:
           description: Invalid user ID, Invalid request payload
           schema:
             $ref: '#/definitions/routers.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/routers.Response'
         "409":
           description: Task already started
           schema:
@@ -123,7 +127,7 @@ paths:
       summary: Start Task
       tags:
       - tasks
-  /tasks/{id}/stop:
+  /tasks/stop/{id}:
     post:
       description: Stops a task for a user
       parameters:
@@ -161,34 +165,6 @@ paths:
       tags:
       - tasks
   /users:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes a user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User deleted successfully
-          schema:
-            $ref: '#/definitions/routers.Response'
-        "404":
-          description: User not found
-          schema:
-            $ref: '#/definitions/routers.Response'
-        "500":
-          description: Failed to delete user
-          schema:
-            $ref: '#/definitions/routers.Response'
-      summary: Delete user
-      tags:
-      - users
     get:
       description: Retrieves a list of users with optional filters
       parameters:
@@ -280,9 +256,36 @@ paths:
       summary: Add a new user
       tags:
       - users
-    put:
+  /users/{id}:
+    delete:
       consumes:
       - application/json
+      description: Deletes a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            $ref: '#/definitions/routers.Response'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/routers.Response'
+        "500":
+          description: Failed to delete user
+          schema:
+            $ref: '#/definitions/routers.Response'
+      summary: Delete user
+      tags:
+      - users
+    put:
       description: Updates a user by ID
       parameters:
       - description: User ID

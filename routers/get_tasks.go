@@ -19,7 +19,7 @@ import (
 // @Failure 400 {object} Response "Invalid user ID"
 // @Failure 404 {object} Response "Tasks not found"
 // @Failure 500 {object} Response "Failed to get tasks"
-// @Router /tasks [get]
+// @Router /tasks/{id} [get]
 func getTasks(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(getTasks)")
 

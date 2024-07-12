@@ -8,15 +8,14 @@ import (
 )
 
 type Config struct {
-	LogLevel         string
-	DBAdress         string
-	DBPort           string
-	DBUser           string
-	DBPass           string
-	DBDatabase       string
-	HostURL          string
-	HostRelativePath string
-	ExternalApiURL   string
+	LogLevel       string
+	DBAdress       string
+	DBPort         string
+	DBUser         string
+	DBPass         string
+	DBDatabase     string
+	HostURL        string
+	ExternalApiURL string
 }
 
 var data Config
@@ -28,15 +27,14 @@ func InitConfig() {
 	}
 
 	data = Config{
-		LogLevel:         os.Getenv("LOG_LEVEL"),
-		DBAdress:         os.Getenv("DB_ADDRESS"),
-		DBPort:           os.Getenv("DB_PORT"),
-		DBUser:           os.Getenv("DB_USER"),
-		DBPass:           os.Getenv("DB_PASSWORD"),
-		DBDatabase:       os.Getenv("DB_DATABASE"),
-		HostURL:          os.Getenv("HOST_URL"),
-		HostRelativePath: os.Getenv("HOST_RELATIVE_PATH"),
-		ExternalApiURL:   os.Getenv("EXTERNAL_API_URL"),
+		LogLevel:       os.Getenv("LOG_LEVEL"),
+		DBAdress:       os.Getenv("DB_ADDRESS"),
+		DBPort:         os.Getenv("DB_PORT"),
+		DBUser:         os.Getenv("DB_USER"),
+		DBPass:         os.Getenv("DB_PASSWORD"),
+		DBDatabase:     os.Getenv("DB_DATABASE"),
+		HostURL:        os.Getenv("HOST_URL"),
+		ExternalApiURL: os.Getenv("EXTERNAL_API_URL"),
 	}
 }
 
@@ -66,10 +64,6 @@ func DBDatabase() string {
 
 func HostURL() string {
 	return data.HostURL
-}
-
-func HostRelativePath() string {
-	return data.HostRelativePath
 }
 
 func ExternalApiURL() string {

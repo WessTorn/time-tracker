@@ -18,7 +18,7 @@ import (
 // @Success 200 {object} Response "User deleted successfully"
 // @Failure 404 {object} Response "User not found"
 // @Failure 500 {object} Response "Failed to delete user"
-// @Router /users [delete]
+// @Router /users/{id} [delete]
 func deleteUser(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(deleteUser)")
 	id := c.Param("id")

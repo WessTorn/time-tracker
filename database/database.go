@@ -238,6 +238,25 @@ func SelectTasks(db *sql.DB, id int) ([]Task, error) {
 	return Tasks, nil
 }
 
+func IsUserExistsFromID(db *sql.DB, id int) bool {
+	logger.Log.Debug("(IsUserExistsFromID)")
+
+	var exists bool
+	query := `
+        SELECT EXISTS (
+            SELECT 1 FROM users
+            WHERE id = $1
+        );
+    `
+	err := db.QueryRow(query, id).Scan(&exists)
+	if err != nil {
+		logger.Log.Debugf("(QueryRow) %v", err)
+		return false
+	}
+
+	return exists
+}
+
 func IsTaskStarted(db *sql.DB, task Task) bool {
 	logger.Log.Debug("(IsTaskStarted)")
 

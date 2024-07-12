@@ -16,6 +16,3 @@ func InitLogger() {
 
 	Log.SetLevel(level)
 }
-
-// logger.Log.Info("Database connected")
-// logger.Log.Debug("Database connected")

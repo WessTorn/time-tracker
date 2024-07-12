@@ -19,9 +19,10 @@ import (
 // @Param task_id body TaskID true "Task ID"
 // @Success 200 {object} Response "Task started successfully"
 // @Failure 400 {object} Response "Invalid user ID, Invalid request payload"
+// @Failure 404 {object} Response "User not found"
 // @Failure 409 {object} Response "Task already started"
 // @Failure 500 {object} Response "Failed to start task"
-// @Router /tasks/{id}/start [post]
+// @Router /tasks/start/{id} [post]
 func startTask(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(startTask)")
 	getId := c.Param("id")
@@ -37,6 +38,11 @@ func startTask(c *gin.Context, db *sql.DB) {
 	err = c.BindJSON(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid request payload"})
+		return
+	}
+
+	if !database.IsUserExistsFromID(db, id) {
+		c.JSON(http.StatusNotFound, Response{404, "error", "User not found"})
 		return
 	}
 

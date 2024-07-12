@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} Response "Invalid user ID, Invalid request payload"
 // @Failure 409 {object} Response "Task not started"
 // @Failure 500 {object} Response "Failed to stop task"
-// @Router /tasks/{id}/stop [post]
+// @Router /tasks/stop/{id} [post]
 func stopTask(c *gin.Context, db *sql.DB) {
 	logger.Log.Debug("(stopTask)")
 	getId := c.Param("id")

@@ -15,57 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tasks": {
-            "get": {
-                "description": "Retrieves a list of tasks for a user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tasks"
-                ],
-                "summary": "Get Tasks",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of tasks",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Task"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid user ID",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    },
-                    "404": {
-                        "description": "Tasks not found",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to get tasks",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/{id}/start": {
+        "/tasks/start/{id}": {
             "post": {
                 "description": "Starts a task for a user",
                 "produces": [
@@ -106,6 +56,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/routers.Response"
                         }
                     },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
                     "409": {
                         "description": "Task already started",
                         "schema": {
@@ -121,7 +77,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tasks/{id}/stop": {
+        "/tasks/stop/{id}": {
             "post": {
                 "description": "Stops a task for a user",
                 "produces": [
@@ -170,6 +126,56 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to stop task",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/{id}": {
+            "get": {
+                "description": "Retrieves a list of tasks for a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tasks"
+                ],
+                "summary": "Get Tasks",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of tasks",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Task"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user ID",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Tasks not found",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to get tasks",
                         "schema": {
                             "$ref": "#/definitions/routers.Response"
                         }
@@ -264,11 +270,60 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "description": "Updates a user by ID",
+            "post": {
+                "description": "Add a new user to the database using passport series and number",
                 "consumes": [
                     "application/json"
                 ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Add a new user",
+                "parameters": [
+                    {
+                        "description": "Passport number",
+                        "name": "passportNumber",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routers.Passport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User added successfully",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload, Invalid passport number",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "User already exists",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch user data from external API, Failed to add user to the database",
+                        "schema": {
+                            "$ref": "#/definitions/routers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "put": {
+                "description": "Updates a user by ID",
                 "produces": [
                     "application/json"
                 ],
@@ -315,56 +370,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to update user",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Add a new user to the database using passport series and number",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Add a new user",
-                "parameters": [
-                    {
-                        "description": "Passport number",
-                        "name": "passportNumber",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/routers.Passport"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User added successfully",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload, Invalid passport number",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    },
-                    "409": {
-                        "description": "User already exists",
-                        "schema": {
-                            "$ref": "#/definitions/routers.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Failed to fetch user data from external API, Failed to add user to the database",
                         "schema": {
                             "$ref": "#/definitions/routers.Response"
                         }
