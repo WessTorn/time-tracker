@@ -3,8 +3,9 @@ package routers
 import (
 	"database/sql"
 	"net/http"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,7 @@ import (
 // @Failure 500 {object} Response "Failed to delete user"
 // @Router /users/{id} [delete]
 func deleteUser(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(deleteUser)")
+	logger.Log.Info("DELETE request (deleteUser)")
 	id := c.Param("id")
 
 	err := database.DeletUserFromID(db, id)
@@ -34,6 +35,8 @@ func deleteUser(c *gin.Context, db *sql.DB) {
 		}
 		return
 	}
+
+	logger.Log.Debug("Reply to request: " + "User deleted successfully")
 
 	c.JSON(http.StatusOK, Response{200, "message", "User deleted successfully"})
 }

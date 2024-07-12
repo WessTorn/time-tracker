@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"net/http"
 	"strconv"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +22,13 @@ import (
 // @Failure 500 {object} Response "Failed to get tasks"
 // @Router /tasks/{id} [get]
 func getTasks(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(getTasks)")
+	logger.Log.Info("GET request (getTasks)")
 
 	getId := c.Param("id")
 
 	id, err := strconv.Atoi(getId)
 	if err != nil {
+		logger.Log.Debugf("(Atoi) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid user ID"})
 		return
 	}

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"time-tracker/config"
-	"time-tracker/database"
-	"time-tracker/logger"
-	"time-tracker/routers"
+	"github.com/WessTorn/time-tracker/config"
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
+	"github.com/WessTorn/time-tracker/routers"
 )
 
 //	@title			Time tracker
@@ -15,8 +15,19 @@ import (
 // @BasePath	/
 func main() {
 	config.InitConfig()
-
 	logger.InitLogger()
+
+	logger.Log.Info("Start")
+
+	logger.Log.Debug("Config:")
+	logger.Log.Debug("LOG_LEVEL=" + config.LogLevel())
+	logger.Log.Debug("DB_ADDRESS=" + config.DBAddress())
+	logger.Log.Debug("DB_PORT=" + config.DBPort())
+	logger.Log.Debug("DB_USER=" + config.DBUser())
+	logger.Log.Debug("DB_PASSWORD=" + config.DBPass())
+	logger.Log.Debug("DB_DATABASE=" + config.DBDatabase())
+	logger.Log.Debug("HOST_URL=" + config.HostURL())
+	logger.Log.Debug("EXTERNAL_API_URL=" + config.ExternalApiURL())
 
 	db := database.ConnectDB()
 	defer db.Close()

@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,19 +24,21 @@ import (
 // @Failure 500 {object} Response "Failed to stop task"
 // @Router /tasks/stop/{id} [post]
 func stopTask(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(stopTask)")
+	logger.Log.Info("POST request (stopTask)")
 	getId := c.Param("id")
 
 	var request TaskID
 
 	id, err := strconv.Atoi(getId)
 	if err != nil {
+		logger.Log.Debugf("(Atoi) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid user ID"})
 		return
 	}
 
 	err = c.BindJSON(&request)
 	if err != nil {
+		logger.Log.Debugf("(BindJSON) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid request payload"})
 		return
 	}
@@ -56,6 +59,8 @@ func stopTask(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to stop task"})
 		return
 	}
+
+	logger.Log.Debug("Reply to request: " + "Task stopped successfully")
 
 	c.JSON(http.StatusOK, Response{200, "message", "Task stopped successfully"})
 }

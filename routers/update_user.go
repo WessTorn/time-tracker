@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,13 +24,14 @@ import (
 // @Failure 500 {object} Response "Failed to update user"
 // @Router /users/{id} [put]
 func updateUser(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(updateUser)")
+	logger.Log.Info("PUT request (updateUser)")
 	id := c.Param("id")
 
 	var user database.User
 
 	err := c.BindJSON(&user)
 	if err != nil {
+		logger.Log.Debugf("(BindJSON) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", err.Error()})
 		return
 	}
@@ -82,6 +84,7 @@ func updateUser(c *gin.Context, db *sql.DB) {
 	}
 
 	if len(fieldsToUpdate) == 0 {
+		logger.Log.Debugf("(updateUser) No fields to update")
 		c.JSON(http.StatusBadRequest, Response{400, "error", "No fields to update"})
 		return
 	}
@@ -99,6 +102,8 @@ func updateUser(c *gin.Context, db *sql.DB) {
 		}
 		return
 	}
+
+	logger.Log.Debugf("Reply to request: User updated successfully")
 
 	c.JSON(http.StatusOK, Response{200, "message", "User updated successfully"})
 }

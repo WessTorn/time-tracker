@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,11 +24,12 @@ import (
 // @Failure 500 {object} Response "Failed to fetch user data from external API, Failed to add user to the database"
 // @Router /users [post]
 func addUser(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(addUser)")
+	logger.Log.Info("POST request (addUser)")
 
 	var request Passport
 	err := c.BindJSON(&request)
 	if err != nil {
+		logger.Log.Debugf("(BindJSON) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid request payload"})
 		return
 	}
@@ -35,13 +37,13 @@ func addUser(c *gin.Context, db *sql.DB) {
 	serie, number, check := checkPassportNumber(request.PassportNumber)
 
 	if !check {
+		logger.Log.Debugf("(checkPassportNumber) Bad value: %s", request.PassportNumber)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid passport number"})
 		return
 	}
 
 	var getUser *database.User
 	getUser, err = GetUserDataFromExternalAPI(serie, number)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to fetch user data from external API"})
 		return
@@ -66,6 +68,8 @@ func addUser(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to add user to the database"})
 		return
 	}
+
+	logger.Log.Debug("Reply to request: " + "User added successfully")
 
 	c.JSON(http.StatusOK, Response{200, "message", "User added successfully"})
 }

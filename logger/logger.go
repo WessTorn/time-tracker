@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"time-tracker/config"
+	"github.com/WessTorn/time-tracker/config"
 
 	"github.com/sirupsen/logrus"
 )

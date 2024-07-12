@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time-tracker/config"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/config"
+	"github.com/WessTorn/time-tracker/logger"
 
 	_ "github.com/lib/pq"
 )
@@ -135,6 +136,7 @@ func DeletUserFromID(db *sql.DB, id string) error {
 	}
 
 	if rowsAffected == 0 {
+		logger.Log.Debug("(rowsAffected) NotFound")
 		return errors.New("UserNotFound")
 	}
 
@@ -232,6 +234,7 @@ func SelectTasks(db *sql.DB, id int) ([]Task, error) {
 	}
 
 	if !isFound {
+		logger.Log.Debugf("(SelectTasks) Not found")
 		return Tasks, errors.New("TasksNotFound")
 	}
 
@@ -307,6 +310,5 @@ func UpdateTask(db *sql.DB, newTask Task) error {
 		return err
 	}
 
-	fmt.Println("Task end successfully")
 	return nil
 }

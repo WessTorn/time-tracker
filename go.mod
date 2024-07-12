@@ -1,4 +1,4 @@
-module time-tracker
+module github.com/WessTorn/time-tracker
 
 go 1.22.1
 

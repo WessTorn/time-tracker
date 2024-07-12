@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,19 +25,21 @@ import (
 // @Failure 500 {object} Response "Failed to start task"
 // @Router /tasks/start/{id} [post]
 func startTask(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(startTask)")
+	logger.Log.Info("POST request (getUsers)")
 	getId := c.Param("id")
 
 	var request TaskID
 
 	id, err := strconv.Atoi(getId)
 	if err != nil {
+		logger.Log.Debugf("(Atoi) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid user ID"})
 		return
 	}
 
 	err = c.BindJSON(&request)
 	if err != nil {
+		logger.Log.Debugf("(BindJSON) %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid request payload"})
 		return
 	}
@@ -62,6 +65,8 @@ func startTask(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusInternalServerError, Response{500, "error", "Failed to start task"})
 		return
 	}
+
+	logger.Log.Debug("Reply to request: " + "Task started successfully")
 
 	c.JSON(http.StatusOK, Response{200, "message", "Task started successfully"})
 }

@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"net/http"
 	"strconv"
-	"time-tracker/database"
-	"time-tracker/logger"
+
+	"github.com/WessTorn/time-tracker/database"
+	"github.com/WessTorn/time-tracker/logger"
 
 	"github.com/gin-gonic/gin"
 
@@ -30,7 +31,7 @@ import (
 // @Failure 500 {object} Response "Failed to get users"
 // @Router /users [get]
 func getUsers(c *gin.Context, db *sql.DB) {
-	logger.Log.Debug("(getUsers)")
+	logger.Log.Info("GET request (getUsers)")
 
 	var filterUser database.User
 
@@ -43,12 +44,14 @@ func getUsers(c *gin.Context, db *sql.DB) {
 
 	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	if err != nil {
+		logger.Log.Debugf("(Atoi) limit %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid limit"})
 		return
 	}
 
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
+		logger.Log.Debugf("(Atoi) page %v", err)
 		c.JSON(http.StatusBadRequest, Response{400, "error", "Invalid page"})
 		return
 	}
